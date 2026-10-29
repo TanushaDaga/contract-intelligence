@@ -1,0 +1,182 @@
+[
+ {
+  "query": "Consider the Sponsorship Agreement between Jacksonville Jaguars, LLC and The ARC Group, Inc.; What catering must be provided to the crew on shoot days?",
+  "kind": "real_title",
+  "split": "train"
+ },
+ {
+  "query": "Consider the Endorsement Agreement between ABG-Shaq, LLC and Papa John's International, Inc.; What is the personal cryptocurrency holding of the company directors?",
+  "kind": "real_title",
+  "split": "train"
+ },
+ {
+  "query": "Consider the Service Agreement between BicycleTX Ltd and Nigel Crockett for Chief Business Officer Position; For how long are internal WhatsApp messages retained?",
+  "kind": "real_title",
+  "split": "test"
+ },
+ {
+  "query": "Consider the Joint Venture Agreement between Tate & Lyle Fermentation Products Ltd. and Igene Biotechnology, Inc. for Astaxanthin Production; Is helicopter transport covered for site visits?",
+  "kind": "real_title",
+  "split": "train"
+ },
+ {
+  "query": "Consider the Gas Franchise Agreement between the Town of Vinton and Roanoke Gas Company; What is the policy on pets at company offices?",
+  "kind": "real_title",
+  "split": "train"
+ },
+ {
+  "query": "Consider the Supply Agreement between Florida Chemical Company, LLC and Flotek Chemistry, LLC for Terpene Products; Which airline must be used for business travel?",
+  "kind": "real_title",
+  "split": "train"
+ },
+ {
+  "query": "Consider the Walabot HOME Reseller Agreement between Vayyar Imaging Ltd. and Inde Living Holdings, Inc.; Are drones allowed for product demonstrations?",
+  "kind": "real_title",
+  "split": "train"
+ },
+ {
+  "query": "Consider the Co-Branding Agreement between PC Quote, Inc. and A.B. Watley, Inc. for Market Data Software; Who provides parking for visitors at the office?",
+  "kind": "real_title",
+  "split": "test"
+ },
+ {
+  "query": "Consider the Promotion Agreement between Depomed, Inc. and King Pharmaceuticals, Inc. for Glumetza; What is the policy on employee tattoos?",
+  "kind": "real_title",
+  "split": "train"
+ },
+ {
+  "query": "Consider the Support and Maintenance Agreement between On2 Technologies, Inc. and Wildform, Inc.; Which languages must subtitles be provided in?",
+  "kind": "real_title",
+  "split": "test"
+ },
+ {
+  "query": "Consider the Strategic Alliance Agreement between Information System Associates, Inc. and Rubicon Software Group plc; Is a gym membership offered to staff?",
+  "kind": "real_title",
+  "split": "train"
+ },
+ {
+  "query": "Consider the Marketing and Transportation Services Agreement between Purolator Courier Ltd. and Parcelway Courier Systems Canada Ltd. (Dynamex Inc.); Are limousine services provided to executives?",
+  "kind": "real_title",
+  "split": "train"
+ },
+ {
+  "query": "Consider the Sponsorship Agreement between Excite, Inc. and Vitamin Shoppe Industries Inc. for Promotion on WebCrawler Channels; Who owns the podcast rights?",
+  "kind": "real_title",
+  "split": "train"
+ },
+ {
+  "query": "Consider the Cooperation Agreement between HPIL ENERGYTECH Inc. and GINARES GROUP AG for Renewable Energy Projects; What is the carbon offset target for each project?",
+  "kind": "real_title",
+  "split": "train"
+ },
+ {
+  "query": "Consider the Intellectual Property Agreement for COVID-19 Treatment Development between Marv Enterprises, LLC, Premier Biomedical, Inc., and Technology Health, Inc.; Does the agreement cover metaverse or NFT versions of the products?",
+  "kind": "real_title",
+  "split": "test"
+ },
+ {
+  "query": "Consider the Endorsement Agreement between Holiday RV Superstores, Inc. and Affinity Group, Inc. for Good Sam Branding; Is the use of emoji in advertising restricted?",
+  "kind": "real_title",
+  "split": "test"
+ },
+ {
+  "query": "Consider the Agency Agreement between General Electric Capital Corporation and Duckwall-Alco Stores, Inc. for Equipment Leasing; What tuition support is given to employees?",
+  "kind": "real_title",
+  "split": "train"
+ },
+ {
+  "query": "Consider the Business Affiliate Agreement between Dr. George D. Green and UNION DENTAL CORP.; Can the affiliate promote the services on TikTok?",
+  "kind": "real_title",
+  "split": "train"
+ },
+ {
+  "query": "Consider the Gas Transportation Agreement between PennTex North Louisiana Operating, LLC and MRD Operating LLC; Is there a smoking policy at the compressor stations?",
+  "kind": "real_title",
+  "split": "train"
+ },
+ {
+  "query": "Consider the Co-Branding and Services Agreement between RSL COM PrimeCall, Inc. and deltathree.com, Inc.; Is machine learning used to route the calls?",
+  "kind": "real_title",
+  "split": "test"
+ },
+ {
+  "query": "Consider the Joint Venture Agreement between MJ Syndicated, Inc. and Simply Herbals for Manufacturing and Selling Health-Related Products; What vegan certification is required for the products?",
+  "kind": "real_title",
+  "split": "test"
+ },
+ {
+  "query": "Consider the Non-Competition Agreement and Right of First Offer between Glamis Gold Ltd. and Western Copper Corporation; Are relocation expenses reimbursed for staff?",
+  "kind": "real_title",
+  "split": "train"
+ },
+ {
+  "query": "Consider the Content Distribution Agreement between Star Sports Network and Meridian Digital Platforms; Does this agreement allow sublicensing to third-party streaming platforms?",
+  "kind": "title_not_in_corpus",
+  "split": "train"
+ },
+ {
+  "query": "Consider the Broadcast Rights Agreement between Horizon Television Ltd. and Eastern Cricket Board; When does the exclusivity period end?",
+  "kind": "title_not_in_corpus",
+  "split": "train"
+ },
+ {
+  "query": "Consider the Master Production Services Agreement between Lakeview Studios, Inc. and Northwind Entertainment, LLC; Who owns the intellectual property in derivative works?",
+  "kind": "title_not_in_corpus",
+  "split": "train"
+ },
+ {
+  "query": "Consider the Co-Production Agreement between Silverline Pictures and Bluebird Media Group; What is the governing law for this contract?",
+  "kind": "title_not_in_corpus",
+  "split": "train"
+ },
+ {
+  "query": "Consider the Music Licensing Agreement between Harmony Records Corp. and Pinnacle Broadcasting Inc.; Is there a cap on liability under this contract?",
+  "kind": "title_not_in_corpus",
+  "split": "test"
+ },
+ {
+  "query": "Consider the Content Syndication Agreement between Orbit Streaming Services and Crescent Films Ltd.; Can this contract be terminated for convenience?",
+  "kind": "title_not_in_corpus",
+  "split": "test"
+ },
+ {
+  "query": "Does the agreement cover broadcast rights for the next Olympic Games?",
+  "kind": "no_title",
+  "split": "train"
+ },
+ {
+  "query": "Are Hindi dubbing rights included for the streaming platform?",
+  "kind": "no_title",
+  "split": "train"
+ },
+ {
+  "query": "What are the blockchain based royalty payment terms?",
+  "kind": "no_title",
+  "split": "test"
+ },
+ {
+  "query": "Does the contract mention a sabbatical policy for creative staff?",
+  "kind": "no_title",
+  "split": "train"
+ },
+ {
+  "query": "Is a cafeteria provided for employees on the production lot?",
+  "kind": "no_title",
+  "split": "test"
+ },
+ {
+  "query": "What meal allowance is paid during a pandemic lockdown?",
+  "kind": "no_title",
+  "split": "train"
+ },
+ {
+  "query": "Is work from home permitted for the post production team?",
+  "kind": "no_title",
+  "split": "train"
+ },
+ {
+  "query": "Does the contract allow artificial intelligence to generate promotional clips?",
+  "kind": "no_title",
+  "split": "test"
+ }
+]

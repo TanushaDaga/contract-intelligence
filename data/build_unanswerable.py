@@ -14,10 +14,12 @@ import json
 import sys
 from pathlib import Path
 
+# this lets the script find the src folder even though it is run from inside data
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from src.data import UNANSWERABLE_FILE, assign_split
 
+# kind 1: a real contract from the corpus with a question it cannot answer
 REAL = [
     "Consider the Sponsorship Agreement between Jacksonville Jaguars, LLC and The ARC Group, Inc.; What catering must be provided to the crew on shoot days?",
     "Consider the Endorsement Agreement between ABG-Shaq, LLC and Papa John's International, Inc.; What is the personal cryptocurrency holding of the company directors?",
@@ -43,6 +45,7 @@ REAL = [
     "Consider the Non-Competition Agreement and Right of First Offer between Glamis Gold Ltd. and Western Copper Corporation; Are relocation expenses reimbursed for staff?",
 ]
 
+# kind 2: a made up contract that is not in the corpus, with a normal contract question
 NOT_IN_CORPUS = [
     "Consider the Content Distribution Agreement between Star Sports Network and Meridian Digital Platforms; Does this agreement allow sublicensing to third-party streaming platforms?",
     "Consider the Broadcast Rights Agreement between Horizon Television Ltd. and Eastern Cricket Board; When does the exclusivity period end?",
@@ -52,6 +55,7 @@ NOT_IN_CORPUS = [
     "Consider the Content Syndication Agreement between Orbit Streaming Services and Crescent Films Ltd.; Can this contract be terminated for convenience?",
 ]
 
+# kind 3: a question that does not name any contract
 NO_TITLE = [
     "Does the agreement cover broadcast rights for the next Olympic Games?",
     "Are Hindi dubbing rights included for the streaming platform?",
@@ -65,8 +69,10 @@ NO_TITLE = [
 
 
 def main():
+    # put all three kinds in one list and remember which kind each one is
     queries = REAL + NOT_IN_CORPUS + NO_TITLE
     kinds = ["real_title"] * len(REAL) + ["title_not_in_corpus"] * len(NOT_IN_CORPUS) + ["no_title"] * len(NO_TITLE)
+    # give every query its train or test split with the same function used for the benchmark, then save
     out = [{"query": q, "kind": k, "split": assign_split(q)} for q, k in zip(queries, kinds)]
     UNANSWERABLE_FILE.write_text(json.dumps(out, indent=1), encoding="utf-8")
     train = sum(o["split"] == "train" for o in out)

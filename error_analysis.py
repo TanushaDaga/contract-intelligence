@@ -14,9 +14,11 @@ from src.evaluate import collect
 from src.indexer import build_index, tokenize
 from src.retriever import Retriever, split_query
 
+# words that suggest the true answer points to another part of the contract
 CROSS_REF = re.compile(r"\b(section|article|clause|subject to|pursuant to|as defined)\b", re.I)
 
 
+# squeeze extra spaces and cut the text to n characters so it is short enough to read
 def clip(text, n=260):
     return " ".join(text.split())[:n]
 
@@ -26,39 +28,50 @@ def main():
     parser.add_argument("--config", default=str(CONFIG_DIR / "final_config.json"))
     args = parser.parse_args()
 
+    # build the searcher and run every train query (never the test queries)
     cfg = Config.load(args.config)
     corpus = load_corpus()
     r = Retriever(build_index(corpus, cfg), cfg)
     rec = collect(r, load_answerable("train"), load_unanswerable("train"))
 
+    # one empty list for every kind of failure
     groups = {"false_abstention": [], "span_truncation": [], "cross_reference": [],
               "lexical_mismatch": [], "other_wrong_section": [], "wrong_document": [], "hallucinated_match": []}
 
     for x in rec["ans"]:
         info = x["info"]
+        # refused although an answer exists
         if r.should_abstain(info):
             groups["false_abstention"].append(x)
             continue
         top3 = info["passages"][:3]
+        # the true answer text, joined if there are several answers
         gt_text = " ".join(s["answer"] for s in x["snippets"])
         recall3 = x["pr"][3][1]
+        # queries that were answered well are not failures
         if recall3 >= 0.95:
             continue
         if not any(p["doc_id"] in {s["doc_id"] for s in x["snippets"]} for p in top3):
+            # none of the top 3 is from the right contract
             groups["wrong_document"].append(x)
         elif CROSS_REF.search(gt_text):
+            # the true answer talks about another section
             groups["cross_reference"].append(x)
         elif recall3 > 0:
+            # part of the answer was found but not all of it
             groups["span_truncation"].append(x)
         elif not set(tokenize(split_query(x["query"])[1], cfg.stem)) & set(tokenize(gt_text, cfg.stem)):
+            # the question and the true answer share no word at all
             groups["lexical_mismatch"].append(x)
         else:
             groups["other_wrong_section"].append(x)
 
+    # for questions with no answer, any result that was not refused is a wrong answer
     for x in rec["un"]:
         if not r.should_abstain(x["info"]):
             groups["hallucinated_match"].append(x)
 
+    # write up to 6 examples of each group into a markdown file
     lines = [f"# Failure cases on train, config {cfg.name}", ""]
     for name, items in groups.items():
         lines += [f"## {name} ({len(items)})", ""]
@@ -66,6 +79,7 @@ def main():
             info = x["info"]
             top = info["passages"][0] if info["passages"] else None
             lines.append(f"- query: {x['query']}")
+            # unanswerable queries have no true answer to show
             if "snippets" in x:
                 s = x["snippets"][0]
                 lines.append(f"  - truth: {s['doc_id']} {s['start']}:{s['end']} R@3={x['pr'][3][1]:.2f}: {clip(s['answer'])}")

@@ -9,6 +9,7 @@ from src.indexer import build_index, tokenize
 from src.metrics import abstention_rates, precision_recall
 from src.retriever import Retriever, split_query
 
+# two small made-up contracts used by most tests below
 DOC_A = ("Section 1. Term.\n\nThis agreement lasts five years from the effective date.\n\n"
          "Section 2. Termination.\n\nEither party may terminate for convenience with thirty days notice.\n\n"
          "Section 3. Governing law.\n\nThis agreement is governed by the laws of Delaware.")
@@ -17,6 +18,7 @@ DOC_B = ("Pricing schedule.\n\nThe price per unit is ten dollars and payment is 
 CORPUS = {"a.txt": DOC_A, "b.txt": DOC_B}
 
 
+# every chunk text must equal the document between its start and end, windows must be at most 60 long
 def test_window_chunk_offsets_match_text():
     chunks = window_chunks(DOC_A, "a.txt", 60, 10)
     assert chunks[0]["start"] == 0
@@ -24,9 +26,11 @@ def test_window_chunk_offsets_match_text():
     for c in chunks:
         assert DOC_A[c["start"]:c["end"]] == c["text"]
         assert c["end"] - c["start"] <= 60
+    # size 60 and overlap 10 means the second window starts at 50
     assert chunks[1]["start"] == 50
 
 
+# paragraph chunks must also have correct positions and never be longer than the limit
 def test_paragraph_chunk_offsets_match_text_and_respect_limit():
     chunks = paragraph_chunks(DOC_A, "a.txt", 120, 10)
     assert len(chunks) > 1
@@ -35,6 +39,7 @@ def test_paragraph_chunk_offsets_match_text_and_respect_limit():
         assert len(c["text"]) <= 120
 
 
+# one very long paragraph has to be cut into several pieces with correct positions
 def test_long_paragraph_is_split():
     text = "word " * 100
     chunks = paragraph_chunks(text, "x.txt", 100, 20)
@@ -42,6 +47,7 @@ def test_long_paragraph_is_split():
     assert all(text[c["start"]:c["end"]] == c["text"] for c in chunks)
 
 
+# keyword search should put the governing law chunk first
 def test_bm25_retrieval_finds_right_chunk():
     cfg = Config(chunk_size=120, overlap=20)
     r = Retriever(build_index(CORPUS, cfg, use_cache=False), cfg)
@@ -50,24 +56,30 @@ def test_bm25_retrieval_finds_right_chunk():
     assert "Delaware" in top["text"]
 
 
+# when the query names a contract, only that contract may appear in the results
 def test_scoping_restricts_to_named_document():
     cfg = Config(chunk_size=120, overlap=20, scope_to_document=True)
     r = Retriever(build_index(CORPUS, cfg, use_cache=False), cfg)
     info = r.rank("Consider the Pricing schedule; what is the governing law of the agreement?")
     assert {p["doc_id"] for p in info["passages"]} == {"b.txt"}
+    # a query without a title is not split
     assert split_query("no title here") == (None, "no title here")
 
 
+# the truth is 100 characters, the result is 100 characters and half of it overlaps, so both numbers are 0.5
 def test_precision_and_recall_values():
     truth = [{"doc_id": "a.txt", "start": 100, "end": 200}]
     hit = {"doc_id": "a.txt", "start": 150, "end": 250}
     p, r = precision_recall([hit], truth)
     assert p == 0.5 and r == 0.5
+    # the same positions in another contract count for nothing
     other_doc = {"doc_id": "b.txt", "start": 100, "end": 200}
     assert precision_recall([other_doc], truth) == (0.0, 0.0)
+    # returning nothing gives zero
     assert precision_recall([], truth) == (0.0, 0.0)
 
 
+# two overlapping chunks together cover the truth once, so recall must be exactly 1 and not more
 def test_recall_does_not_double_count_overlapping_chunks():
     truth = [{"doc_id": "a.txt", "start": 0, "end": 100}]
     chunks = [{"doc_id": "a.txt", "start": 0, "end": 80}, {"doc_id": "a.txt", "start": 50, "end": 100}]
@@ -76,12 +88,14 @@ def test_recall_does_not_double_count_overlapping_chunks():
     assert p == 1.0
 
 
+# 1 of 4 answerable queries refused gives 0.25, and 2 of 3 unanswerable refused gives two thirds
 def test_abstention_rates():
     tar, far = abstention_rates([True, False, False, False], [True, True, False])
     assert far == 0.25
     assert abs(tar - 2 / 3) < 1e-9
 
 
+# a normal threshold gives results, a very strict one gives nothing and the standard message
 def test_abstains_below_threshold_and_answers_above():
     cfg = Config(chunk_size=120, overlap=20)
     r = Retriever(build_index(CORPUS, cfg, use_cache=False), cfg)
@@ -94,6 +108,7 @@ def test_abstains_below_threshold_and_answers_above():
     assert result["message"] == "No relevant clause found"
 
 
+# with one easy answerable and one nonsense query, calibration must refuse the nonsense and answer the real one
 def test_calibration_separates_easy_cases():
     cfg = Config(chunk_size=120, overlap=20)
     r = Retriever(build_index(CORPUS, cfg, use_cache=False), cfg)
@@ -106,6 +121,7 @@ def test_calibration_separates_easy_cases():
     assert m["TAR"] == 1.0 and m["FAR"] == 0.0
 
 
+# the same query always lands in the same split, and the mini function returns exactly 194 queries
 def test_split_is_stable_and_mini_size():
     assert assign_split("some query") == assign_split("  some query  ")
     assert assign_split("some query") in ("train", "test")
@@ -114,6 +130,7 @@ def test_split_is_stable_and_mini_size():
     assert mini(tests) == mini(tests)
 
 
+# with stemming governing and governed become the same word, and the search can use that
 def test_stemming_joins_word_forms():
     assert tokenize("governing governed", stem=True) == ["govern", "govern"]
     assert tokenize("governing governed") == ["governing", "governed"]

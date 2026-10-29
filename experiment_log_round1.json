@@ -1,0 +1,853 @@
+{
+  "objective": {
+    "primary_metric": "Recall@3 on train answerable queries",
+    "guardrails": {
+      "false_abstention_rate": "< 0.05",
+      "true_abstention_rate": "> 0.80"
+    },
+    "why": "Recall@3 says whether the right clause is among the three shown to the user. The guardrails stop the system from winning by always answering or by always refusing.",
+    "acceptance_rule": "A candidate is accepted if its guardrail violation is clearly smaller than the current best, or if the violation is about equal and Recall@3 rises by at least 0.005."
+  },
+  "data": "train split only",
+  "n_train_answerable": 140,
+  "n_train_unanswerable": 24,
+  "iterations": [
+    {
+      "iteration": 1,
+      "name": "baseline",
+      "proposed_by": "starting point",
+      "rationale": "Simplest reasonable pipeline: BM25 over fixed 1000 character chunks, always answers.",
+      "config": {
+        "name": "baseline",
+        "chunk_mode": "window",
+        "chunk_size": 1000,
+        "overlap": 150,
+        "method": "bm25",
+        "alpha": 0.5,
+        "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+        "scope_to_document": false,
+        "doc_threshold": 0.0,
+        "threshold": 0.0,
+        "soft_threshold": 0.0,
+        "min_gap": 0.0,
+        "top_k": 3
+      },
+      "train_metrics": {
+        "n_answerable": 140,
+        "n_unanswerable": 24,
+        "P@1": 0.0048,
+        "R@1": 0.0152,
+        "P@3": 0.0112,
+        "R@3": 0.0653,
+        "P@5": 0.0171,
+        "R@5": 0.1615,
+        "TAR": 0.0,
+        "FAR": 0.0
+      },
+      "guardrails_met": false,
+      "diagnosis": {
+        "false_abstention": 0,
+        "wrong_document": 0,
+        "right_document_wrong_section": 125,
+        "partly_covered": 11,
+        "well_covered": 4
+      },
+      "decision": "accepted",
+      "reason": "baseline"
+    },
+    {
+      "iteration": 2,
+      "name": "chunk_size_grid",
+      "proposed_by": "grid search",
+      "rationale": "Chunks that are too big hold many topics and hurt precision. Try smaller chunks and other overlaps, never bigger than the baseline.",
+      "diagnosis_before": {
+        "false_abstention": 0,
+        "wrong_document": 0,
+        "right_document_wrong_section": 125,
+        "partly_covered": 11,
+        "well_covered": 4
+      },
+      "change": {
+        "overlap": [
+          150,
+          100
+        ]
+      },
+      "candidates_tried": 12,
+      "config": {
+        "name": "baseline",
+        "chunk_mode": "window",
+        "chunk_size": 1000,
+        "overlap": 100,
+        "method": "bm25",
+        "alpha": 0.5,
+        "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+        "scope_to_document": false,
+        "doc_threshold": 0.0,
+        "threshold": 0.0,
+        "soft_threshold": 0.0,
+        "min_gap": 0.0,
+        "top_k": 3
+      },
+      "train_metrics": {
+        "n_answerable": 140,
+        "n_unanswerable": 24,
+        "P@1": 0.0041,
+        "R@1": 0.0144,
+        "P@3": 0.0172,
+        "R@3": 0.0829,
+        "P@5": 0.0179,
+        "R@5": 0.1871,
+        "TAR": 0.0,
+        "FAR": 0.0
+      },
+      "guardrails_met": false,
+      "diagnosis_after": {
+        "false_abstention": 0,
+        "wrong_document": 0,
+        "right_document_wrong_section": 123,
+        "partly_covered": 10,
+        "well_covered": 7
+      },
+      "decision": "accepted",
+      "reason": "Recall@3 rose by 0.018 with guardrails about the same",
+      "all_candidates": [
+        {
+          "change": {
+            "chunk_size": [
+              1000,
+              400
+            ],
+            "overlap": [
+              150,
+              0
+            ]
+          },
+          "metrics": {
+            "n_answerable": 140,
+            "n_unanswerable": 24,
+            "P@1": 0.0053,
+            "R@1": 0.0027,
+            "P@3": 0.0061,
+            "R@3": 0.0141,
+            "P@5": 0.0082,
+            "R@5": 0.0355,
+            "TAR": 0.0,
+            "FAR": 0.0
+          }
+        },
+        {
+          "change": {
+            "chunk_size": [
+              1000,
+              400
+            ],
+            "overlap": [
+              150,
+              100
+            ]
+          },
+          "metrics": {
+            "n_answerable": 140,
+            "n_unanswerable": 24,
+            "P@1": 0.0035,
+            "R@1": 0.0018,
+            "P@3": 0.0039,
+            "R@3": 0.0097,
+            "P@5": 0.0087,
+            "R@5": 0.0375,
+            "TAR": 0.0,
+            "FAR": 0.0
+          }
+        },
+        {
+          "change": {
+            "chunk_size": [
+              1000,
+              400
+            ]
+          },
+          "metrics": {
+            "n_answerable": 140,
+            "n_unanswerable": 24,
+            "P@1": 0.0053,
+            "R@1": 0.0027,
+            "P@3": 0.0038,
+            "R@3": 0.0074,
+            "P@5": 0.0046,
+            "R@5": 0.0192,
+            "TAR": 0.0,
+            "FAR": 0.0
+          }
+        },
+        {
+          "change": {
+            "chunk_size": [
+              1000,
+              600
+            ],
+            "overlap": [
+              150,
+              0
+            ]
+          },
+          "metrics": {
+            "n_answerable": 140,
+            "n_unanswerable": 24,
+            "P@1": 0.0012,
+            "R@1": 0.0009,
+            "P@3": 0.0045,
+            "R@3": 0.0146,
+            "P@5": 0.0079,
+            "R@5": 0.0572,
+            "TAR": 0.0,
+            "FAR": 0.0
+          }
+        },
+        {
+          "change": {
+            "chunk_size": [
+              1000,
+              600
+            ],
+            "overlap": [
+              150,
+              100
+            ]
+          },
+          "metrics": {
+            "n_answerable": 140,
+            "n_unanswerable": 24,
+            "P@1": 0.0,
+            "R@1": 0.0,
+            "P@3": 0.0064,
+            "R@3": 0.0191,
+            "P@5": 0.0091,
+            "R@5": 0.0591,
+            "TAR": 0.0,
+            "FAR": 0.0
+          }
+        },
+        {
+          "change": {
+            "chunk_size": [
+              1000,
+              600
+            ]
+          },
+          "metrics": {
+            "n_answerable": 140,
+            "n_unanswerable": 24,
+            "P@1": 0.0,
+            "R@1": 0.0,
+            "P@3": 0.0072,
+            "R@3": 0.0129,
+            "P@5": 0.0101,
+            "R@5": 0.0523,
+            "TAR": 0.0,
+            "FAR": 0.0
+          }
+        },
+        {
+          "change": {
+            "chunk_size": [
+              1000,
+              800
+            ],
+            "overlap": [
+              150,
+              0
+            ]
+          },
+          "metrics": {
+            "n_answerable": 140,
+            "n_unanswerable": 24,
+            "P@1": 0.0018,
+            "R@1": 0.0037,
+            "P@3": 0.0141,
+            "R@3": 0.0681,
+            "P@5": 0.0171,
+            "R@5": 0.1455,
+            "TAR": 0.0,
+            "FAR": 0.0
+          }
+        },
+        {
+          "change": {
+            "chunk_size": [
+              1000,
+              800
+            ],
+            "overlap": [
+              150,
+              100
+            ]
+          },
+          "metrics": {
+            "n_answerable": 140,
+            "n_unanswerable": 24,
+            "P@1": 0.0018,
+            "R@1": 0.0037,
+            "P@3": 0.0091,
+            "R@3": 0.0355,
+            "P@5": 0.0146,
+            "R@5": 0.1011,
+            "TAR": 0.0,
+            "FAR": 0.0
+          }
+        },
+        {
+          "change": {
+            "chunk_size": [
+              1000,
+              800
+            ]
+          },
+          "metrics": {
+            "n_answerable": 140,
+            "n_unanswerable": 24,
+            "P@1": 0.0018,
+            "R@1": 0.0037,
+            "P@3": 0.0096,
+            "R@3": 0.0458,
+            "P@5": 0.0153,
+            "R@5": 0.1048,
+            "TAR": 0.0,
+            "FAR": 0.0
+          }
+        },
+        {
+          "change": {
+            "overlap": [
+              150,
+              0
+            ]
+          },
+          "metrics": {
+            "n_answerable": 140,
+            "n_unanswerable": 24,
+            "P@1": 0.0041,
+            "R@1": 0.0144,
+            "P@3": 0.0119,
+            "R@3": 0.0719,
+            "P@5": 0.0147,
+            "R@5": 0.1503,
+            "TAR": 0.0,
+            "FAR": 0.0
+          }
+        },
+        {
+          "change": {
+            "overlap": [
+              150,
+              100
+            ]
+          },
+          "metrics": {
+            "n_answerable": 140,
+            "n_unanswerable": 24,
+            "P@1": 0.0041,
+            "R@1": 0.0144,
+            "P@3": 0.0172,
+            "R@3": 0.0829,
+            "P@5": 0.0179,
+            "R@5": 0.1871,
+            "TAR": 0.0,
+            "FAR": 0.0
+          }
+        },
+        {
+          "change": {},
+          "metrics": {
+            "n_answerable": 140,
+            "n_unanswerable": 24,
+            "P@1": 0.0048,
+            "R@1": 0.0152,
+            "P@3": 0.0112,
+            "R@3": 0.0653,
+            "P@5": 0.0171,
+            "R@5": 0.1615,
+            "TAR": 0.0,
+            "FAR": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "iteration": 3,
+      "name": "scope_to_named_document",
+      "proposed_by": "rule from diagnosis",
+      "rationale": "Most failures are the right contract but the wrong section. The query names its contract, so move the title out of the query and search only inside that contract.",
+      "diagnosis_before": {
+        "false_abstention": 0,
+        "wrong_document": 0,
+        "right_document_wrong_section": 123,
+        "partly_covered": 10,
+        "well_covered": 7
+      },
+      "change": {
+        "scope_to_document": [
+          false,
+          true
+        ]
+      },
+      "candidates_tried": 1,
+      "config": {
+        "name": "baseline",
+        "chunk_mode": "window",
+        "chunk_size": 1000,
+        "overlap": 100,
+        "method": "bm25",
+        "alpha": 0.5,
+        "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+        "scope_to_document": true,
+        "doc_threshold": 0.0,
+        "threshold": 0.0,
+        "soft_threshold": 0.0,
+        "min_gap": 0.0,
+        "top_k": 3
+      },
+      "train_metrics": {
+        "n_answerable": 140,
+        "n_unanswerable": 24,
+        "P@1": 0.088,
+        "R@1": 0.2378,
+        "P@3": 0.0644,
+        "R@3": 0.3999,
+        "P@5": 0.0477,
+        "R@5": 0.4753,
+        "TAR": 0.0,
+        "FAR": 0.0
+      },
+      "guardrails_met": false,
+      "diagnosis_after": {
+        "false_abstention": 0,
+        "wrong_document": 0,
+        "right_document_wrong_section": 73,
+        "partly_covered": 24,
+        "well_covered": 43
+      },
+      "decision": "accepted",
+      "reason": "Recall@3 rose by 0.317 with guardrails about the same"
+    },
+    {
+      "iteration": 4,
+      "name": "calibrate_abstention",
+      "proposed_by": "threshold calibration",
+      "rationale": "The system never abstains yet. Pick the score thresholds on the train queries so both guardrails are met.",
+      "diagnosis_before": {
+        "false_abstention": 0,
+        "wrong_document": 0,
+        "right_document_wrong_section": 73,
+        "partly_covered": 24,
+        "well_covered": 43
+      },
+      "change": {
+        "doc_threshold": [
+          0.0,
+          0.2196635
+        ],
+        "threshold": [
+          0.0,
+          0.09825500000000001
+        ]
+      },
+      "candidates_tried": 1,
+      "config": {
+        "name": "baseline",
+        "chunk_mode": "window",
+        "chunk_size": 1000,
+        "overlap": 100,
+        "method": "bm25",
+        "alpha": 0.5,
+        "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+        "scope_to_document": true,
+        "doc_threshold": 0.2196635,
+        "threshold": 0.09825500000000001,
+        "soft_threshold": 0.0,
+        "min_gap": 0.0,
+        "top_k": 3
+      },
+      "train_metrics": {
+        "n_answerable": 140,
+        "n_unanswerable": 24,
+        "P@1": 0.0859,
+        "R@1": 0.2306,
+        "P@3": 0.0599,
+        "R@3": 0.3603,
+        "P@5": 0.043,
+        "R@5": 0.4148,
+        "TAR": 0.5,
+        "FAR": 0.0929
+      },
+      "guardrails_met": false,
+      "diagnosis_after": {
+        "false_abstention": 13,
+        "wrong_document": 0,
+        "right_document_wrong_section": 66,
+        "partly_covered": 23,
+        "well_covered": 38
+      },
+      "decision": "accepted",
+      "reason": "guardrail violation fell from 0.800 to 0.343"
+    },
+    {
+      "iteration": 5,
+      "name": "hybrid_alpha_0.5",
+      "proposed_by": "rule",
+      "rationale": "BM25 cannot match synonyms (for example 'exclusivity' and 'sole right'). Add MiniLM dense scores with equal weight.",
+      "diagnosis_before": {
+        "false_abstention": 13,
+        "wrong_document": 0,
+        "right_document_wrong_section": 66,
+        "partly_covered": 23,
+        "well_covered": 38
+      },
+      "change": {
+        "method": [
+          "bm25",
+          "hybrid"
+        ],
+        "threshold": [
+          0.09825500000000001,
+          0.215249
+        ]
+      },
+      "candidates_tried": 1,
+      "config": {
+        "name": "baseline",
+        "chunk_mode": "window",
+        "chunk_size": 1000,
+        "overlap": 100,
+        "method": "hybrid",
+        "alpha": 0.5,
+        "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+        "scope_to_document": true,
+        "doc_threshold": 0.2196635,
+        "threshold": 0.215249,
+        "soft_threshold": 0.0,
+        "min_gap": 0.0,
+        "top_k": 3
+      },
+      "train_metrics": {
+        "n_answerable": 140,
+        "n_unanswerable": 24,
+        "P@1": 0.1335,
+        "R@1": 0.3284,
+        "P@3": 0.0887,
+        "R@3": 0.5044,
+        "P@5": 0.0661,
+        "R@5": 0.5996,
+        "TAR": 0.5833,
+        "FAR": 0.0286
+      },
+      "guardrails_met": false,
+      "diagnosis_after": {
+        "false_abstention": 4,
+        "wrong_document": 0,
+        "right_document_wrong_section": 52,
+        "partly_covered": 29,
+        "well_covered": 55
+      },
+      "decision": "accepted",
+      "reason": "guardrail violation fell from 0.343 to 0.217"
+    },
+    {
+      "iteration": 6,
+      "name": "hybrid_alpha_grid",
+      "proposed_by": "grid search",
+      "rationale": "Tune how much weight the dense score gets.",
+      "diagnosis_before": {
+        "false_abstention": 4,
+        "wrong_document": 0,
+        "right_document_wrong_section": 52,
+        "partly_covered": 29,
+        "well_covered": 55
+      },
+      "change": {
+        "alpha": [
+          0.5,
+          0.8
+        ],
+        "threshold": [
+          0.215249,
+          0.305383
+        ]
+      },
+      "candidates_tried": 4,
+      "config": {
+        "name": "baseline",
+        "chunk_mode": "window",
+        "chunk_size": 1000,
+        "overlap": 100,
+        "method": "hybrid",
+        "alpha": 0.8,
+        "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+        "scope_to_document": true,
+        "doc_threshold": 0.2196635,
+        "threshold": 0.305383,
+        "soft_threshold": 0.0,
+        "min_gap": 0.0,
+        "top_k": 3
+      },
+      "train_metrics": {
+        "n_answerable": 140,
+        "n_unanswerable": 24,
+        "P@1": 0.148,
+        "R@1": 0.3195,
+        "P@3": 0.0934,
+        "R@3": 0.543,
+        "P@5": 0.071,
+        "R@5": 0.6552,
+        "TAR": 0.7917,
+        "FAR": 0.0429
+      },
+      "guardrails_met": false,
+      "diagnosis_after": {
+        "false_abstention": 6,
+        "wrong_document": 0,
+        "right_document_wrong_section": 47,
+        "partly_covered": 27,
+        "well_covered": 60
+      },
+      "decision": "accepted",
+      "reason": "guardrail violation fell from 0.217 to 0.008",
+      "all_candidates": [
+        {
+          "change": {
+            "alpha": [
+              0.5,
+              0.2
+            ],
+            "threshold": [
+              0.215249,
+              0.12177299999999999
+            ]
+          },
+          "metrics": {
+            "n_answerable": 140,
+            "n_unanswerable": 24,
+            "P@1": 0.1039,
+            "R@1": 0.2693,
+            "P@3": 0.0755,
+            "R@3": 0.4511,
+            "P@5": 0.0553,
+            "R@5": 0.5274,
+            "TAR": 0.5417,
+            "FAR": 0.0357
+          }
+        },
+        {
+          "change": {
+            "alpha": [
+              0.5,
+              0.35
+            ],
+            "threshold": [
+              0.215249,
+              0.14093050000000001
+            ]
+          },
+          "metrics": {
+            "n_answerable": 140,
+            "n_unanswerable": 24,
+            "P@1": 0.1237,
+            "R@1": 0.3178,
+            "P@3": 0.0809,
+            "R@3": 0.4735,
+            "P@5": 0.062,
+            "R@5": 0.5745,
+            "TAR": 0.5417,
+            "FAR": 0.0
+          }
+        },
+        {
+          "change": {
+            "alpha": [
+              0.5,
+              0.65
+            ],
+            "threshold": [
+              0.215249,
+              0.268527
+            ]
+          },
+          "metrics": {
+            "n_answerable": 140,
+            "n_unanswerable": 24,
+            "P@1": 0.1556,
+            "R@1": 0.3516,
+            "P@3": 0.0905,
+            "R@3": 0.5201,
+            "P@5": 0.0687,
+            "R@5": 0.6195,
+            "TAR": 0.75,
+            "FAR": 0.0571
+          }
+        },
+        {
+          "change": {
+            "alpha": [
+              0.5,
+              0.8
+            ],
+            "threshold": [
+              0.215249,
+              0.305383
+            ]
+          },
+          "metrics": {
+            "n_answerable": 140,
+            "n_unanswerable": 24,
+            "P@1": 0.148,
+            "R@1": 0.3195,
+            "P@3": 0.0934,
+            "R@3": 0.543,
+            "P@5": 0.071,
+            "R@5": 0.6552,
+            "TAR": 0.7917,
+            "FAR": 0.0429
+          }
+        }
+      ]
+    },
+    {
+      "iteration": 7,
+      "name": "paragraph_chunks",
+      "proposed_by": "rule",
+      "rationale": "Legal clauses end at paragraph breaks. Cut chunks on blank lines so a chunk is whole clauses and not half of one.",
+      "diagnosis_before": {
+        "false_abstention": 6,
+        "wrong_document": 0,
+        "right_document_wrong_section": 47,
+        "partly_covered": 27,
+        "well_covered": 60
+      },
+      "change": {
+        "chunk_mode": [
+          "window",
+          "paragraph"
+        ],
+        "threshold": [
+          0.305383,
+          0.31481099999999995
+        ]
+      },
+      "candidates_tried": 1,
+      "config": {
+        "name": "baseline",
+        "chunk_mode": "paragraph",
+        "chunk_size": 1000,
+        "overlap": 100,
+        "method": "hybrid",
+        "alpha": 0.8,
+        "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+        "scope_to_document": true,
+        "doc_threshold": 0.2196635,
+        "threshold": 0.31481099999999995,
+        "soft_threshold": 0.0,
+        "min_gap": 0.0,
+        "top_k": 3
+      },
+      "train_metrics": {
+        "n_answerable": 140,
+        "n_unanswerable": 24,
+        "P@1": 0.1712,
+        "R@1": 0.3066,
+        "P@3": 0.1078,
+        "R@3": 0.5375,
+        "P@5": 0.0781,
+        "R@5": 0.6384,
+        "TAR": 0.7917,
+        "FAR": 0.0571
+      },
+      "guardrails_met": false,
+      "diagnosis_after": {
+        "false_abstention": 8,
+        "wrong_document": 0,
+        "right_document_wrong_section": 51,
+        "partly_covered": 12,
+        "well_covered": 69
+      },
+      "decision": "rejected",
+      "reason": "Recall@3 changed by -0.006, below the 0.005 needed"
+    },
+    {
+      "iteration": 8,
+      "name": "gap_gate",
+      "proposed_by": "threshold calibration",
+      "rationale": "Add a second abstention rule: refuse when the best score is lowish and the best chunk barely beats the second.",
+      "diagnosis_before": {
+        "false_abstention": 6,
+        "wrong_document": 0,
+        "right_document_wrong_section": 47,
+        "partly_covered": 27,
+        "well_covered": 60
+      },
+      "change": {},
+      "candidates_tried": 1,
+      "config": {
+        "name": "baseline",
+        "chunk_mode": "window",
+        "chunk_size": 1000,
+        "overlap": 100,
+        "method": "hybrid",
+        "alpha": 0.8,
+        "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+        "scope_to_document": true,
+        "doc_threshold": 0.2196635,
+        "threshold": 0.305383,
+        "soft_threshold": 0.0,
+        "min_gap": 0.0,
+        "top_k": 3
+      },
+      "train_metrics": {
+        "n_answerable": 140,
+        "n_unanswerable": 24,
+        "P@1": 0.148,
+        "R@1": 0.3195,
+        "P@3": 0.0934,
+        "R@3": 0.543,
+        "P@5": 0.071,
+        "R@5": 0.6552,
+        "TAR": 0.7917,
+        "FAR": 0.0429
+      },
+      "guardrails_met": false,
+      "diagnosis_after": {
+        "false_abstention": 6,
+        "wrong_document": 0,
+        "right_document_wrong_section": 47,
+        "partly_covered": 27,
+        "well_covered": 60
+      },
+      "decision": "rejected",
+      "reason": "Recall@3 changed by +0.000, below the 0.005 needed"
+    }
+  ],
+  "final_train_metrics": {
+    "n_answerable": 140,
+    "n_unanswerable": 24,
+    "P@1": 0.148,
+    "R@1": 0.3195,
+    "P@3": 0.0934,
+    "R@3": 0.543,
+    "P@5": 0.071,
+    "R@5": 0.6552,
+    "TAR": 0.7917,
+    "FAR": 0.0429
+  },
+  "baseline_train_metrics": {
+    "n_answerable": 140,
+    "n_unanswerable": 24,
+    "P@1": 0.0048,
+    "R@1": 0.0152,
+    "P@3": 0.0112,
+    "R@3": 0.0653,
+    "P@5": 0.0171,
+    "R@5": 0.1615,
+    "TAR": 0.0,
+    "FAR": 0.0
+  },
+  "seconds": 271
+}
